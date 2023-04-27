@@ -11,7 +11,7 @@ __Go Office is a scheduling app for the company Go Autonomous that helps manage 
 - __Shift Booking:__ Users can book shifts and exchange them between each other. Users can book either full day, afternoon, or morning shifts. If a user plans to leave early, they can mark the time they leave so others know there is an available slot.
 - __Desk Management:__ Admins can manage the number of desks available in the office.
 - __Team Creation:__ Admins can create several teams with their respective amount of desks.
-- __Slack Integration:__ Users can controll everything via 
+- __Slack Integration:__ Users can controll everything via Slack by adding the Go Office App to their Slack Server
 
 ## Technologies Used
 
