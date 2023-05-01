@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Office</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+
+    <!-- Custom CSS -->
+    <link href="/styling/style.css" rel="stylesheet">
+    <!-- jQuery and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
+    <script src="index.js"></script>
+</head>
+<body>
+    <!-- Hamburger icon -->
+    <i class="hamburger fas fa-bars"></i>
+
+    <div class="sidebar">
+        <!-- Add your logo image here -->
+        <img src="/images/go office_white.png" alt="Logo" class="logo-large logo-expanded">
+        <img src="/images/g_icon_white.png" alt="Logo Collapsed" class="logo logo-collapsed" style="display:none;">
+
+        <!-- Tab links with icons -->
+        <a href="#tab1">
+            <i class="icon fas fa-home"></i> <span>Home</span>
+        </a>
+        <a href="#tab2">
+            <i class="icon fas fa-user"></i> <span>Profile</span>
+        </a>
+        <a href="#tab3">
+            <i class="icon fas fa-calendar"></i> <span>Schedule</span>
+        </a>
+        <a href="#tab4">
+            <i class="icon fas fa-cog"></i> <span>Settings</span>
+        </a>
+
+        <!-- Sign In/Sign Out Button at the bottom of the sidebar -->
+        <div class="sidebar-bottom">
+            <a href="#sign-in" class="sign-btn">
+                <i class="icon fas fa-sign-in-alt"></i> <span>Sign In</span>
+            </a>
+            <a href="#sign-out" class="sign-btn" style="display:none;">
+                <i class="icon fas fa-sign-out-alt"></i> <span>Sign Out</span>
+            </a>
+        </div>
+    </div>
+</body>
+
+
+</html>
