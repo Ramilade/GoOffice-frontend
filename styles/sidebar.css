@@ -93,7 +93,7 @@ body {
     font-family: "Roboto", sans-serif;
 }
 
-.main-content {
+.content {
     margin-left: 220px; /* Same width as the expanded sidebar */
     padding: 20px;
     margin-top: 50px;
