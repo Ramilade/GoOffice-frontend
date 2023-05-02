@@ -22,21 +22,21 @@
         <!-- Hamburger icon -->
         <i class="hamburger fas fa-bars"></i>
 
-        <div class="sidebar sidebar-collapsed">
+        <div id="menu" class="sidebar sidebar-collapsed">
             <img src="/images/g_icon_white.png" alt="Logo Collapsed" class="logo logo-collapsed">
             <img src="/images/go office_white.png" alt="Logo" class="logo-large logo-expanded" style="display:none;">
     
             <!-- Tab links with icons -->
-            <a href="#tab1">
+            <a class="nav-link" href="#tab1" data-navigo>
                 <i class="icon fas fa-home"></i> <span>Home</span>
             </a>
-            <a href="#tab2">
+            <a class="nav-link" href="#tab2" data-navigo>
                 <i class="icon fas fa-user"></i> <span>Profile</span>
             </a>
-            <a href="/schedule">
+            <a class="nav-link" href="/schedule" data-navigo>
                 <i class="icon fas fa-calendar"></i> <span>Schedule</span>
             </a>
-            <a href="#tab4">
+            <a class="nav-link" href="#tab4" data-navigo>
                 <i class="icon fas fa-cog"></i> <span>Settings</span>
             </a>
     
@@ -52,7 +52,7 @@
         </div>
 
         <!-- Main Content -->
-    <div class="content"></div>
+    <div id="content" class="content"></div>
 
 </body>
 </html>

@@ -16,7 +16,7 @@ window.addEventListener("load", async () => {
   adjustForMissingHash()
 
   const router = new Navigo("/", { hash: true });
-  //Not especially nice, BUT MEANT to simplify things. Make the router global so it can be accessed from all js-files
+
   window.router = router
 
   router
