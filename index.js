@@ -1,19 +1,48 @@
-$(document).ready(function() {
-    // Toggle Sign In and Sign Out buttons
-    $('.sign-btn').on('click', function(event) {
-        event.preventDefault();
-        $('.sign-btn').toggle();
-    });
+import "./navigo_EditedByLars.js"  //Will create the global Navigo, with a few changes, object used below
 
-    // Toggle sidebar collapse
-    $('.hamburger').on('click', function() {
-        $('.sidebar').toggleClass('sidebar-collapsed');
-        $('.logo-expanded, .logo-collapsed').toggle(); // Toggle logo visibility
-        if ($('.sidebar').hasClass('sidebar-collapsed')) {
-            $('.hamburger').css('left', '90px'); // Position the hamburger next to the collapsed sidebar
-        } else {
-            $('.hamburger').css('left', '220px'); // Position the hamburger next to the expanded sidebar
-        }
-    });
+import {
+  setActiveLink, adjustForMissingHash, renderTemplate, loadHtml
+} from "./utils.js"
+
+import { initSchedule } from "./pages/schedule/schedule.js"
+
+
+window.addEventListener("load", async () => {
+
+  const templateSchedule = await loadHtml("./pages/schedule/schedule.html")
+  const templateNotFound = await loadHtml("./pages/notFound/notFound.html")
+
+
+  adjustForMissingHash()
+
+  const router = new Navigo("/", { hash: true });
+  //Not especially nice, BUT MEANT to simplify things. Make the router global so it can be accessed from all js-files
+  window.router = router
+
+  router
+    .hooks({
+      before(done, match) {
+        setActiveLink("menu", match.url)
+        done()
+      }
+    })
+    .on({
+      "/schedule": () => {
+        renderTemplate(templateSchedule, "content")
+        initSchedule()
+      },
+    })
+    .notFound(() => {
+      renderTemplate(templateNotFound, "content")
+    })
+    .resolve()
 });
+
+
+window.onerror = function (errorMsg, url, lineNumber, column, errorObj) {
+  alert('Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber
+    + ' Column: ' + column + ' StackTrace: ' + errorObj);
+}
+
+
 
