@@ -18,7 +18,7 @@ $(document).ready(function() {
          } else {
              $('.hamburger').css('left', '220px'); // Position the hamburger next to the expanded sidebar
          }
-            $('.main-content').toggleClass('sidebar-collapsed');
+            $('.content').toggleClass('sidebar-collapsed');
         } else {
             // Toggle menu visibility for mobile view
             $('.sidebar').toggleClass('mobile-active');

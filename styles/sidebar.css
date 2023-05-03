@@ -103,7 +103,7 @@ body {
     display: flex;
 }
 
-.sidebar-collapsed ~ .main-content {
+.sidebar-collapsed ~ .content {
     margin-left: 70px; /* Same width as the collapsed sidebar */
 }
 
