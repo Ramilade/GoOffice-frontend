@@ -95,15 +95,21 @@ body {
   }
 
   .day.selected {
-    background-color: #94c9e2;
-    color: white;
+    
+    border: 3px solid #000;
   }
-
 
   .day.past {
     background-color: #5c5b5b;
     pointer-events: none;
   }
+
+  .day.today {
+    background-color: #94c9e2;
+    color: white;
+    
+  }
+  
   
   
   

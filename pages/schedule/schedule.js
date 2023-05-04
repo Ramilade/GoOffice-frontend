@@ -57,9 +57,9 @@ function generateCalendar() {
             const options = { day: '2-digit', month: '2-digit', timeZone: 'Europe/Copenhagen' };
             const dateString = currentDate.toLocaleDateString('en-DK', options);
             const isPast = currentDate.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0);
-
+            const isToday = currentDate.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0);
             calendarHTML += `
-              <div class="day ${isPast ? 'past' : ''}" data-date="${currentDate.toISOString()}">
+              <div class="day ${isPast ? 'past' : ''} ${isToday ? 'today' : ''}" data-date="${currentDate.toISOString()}">
                 <div class="day-name">${DAYS_OF_WEEK[j]}</div>
                 <div class="day-number">${dateString}</div>
               </div>`;
