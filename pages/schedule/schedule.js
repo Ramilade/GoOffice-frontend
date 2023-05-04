@@ -8,6 +8,7 @@ export async function initSchedule() {
         initSchedule();
       });
   generateCalendar();
+  fetchBookings();
 
   document.getElementById("calendar").addEventListener("click", (e) => {
     const clickedElement = e.target;
@@ -22,10 +23,53 @@ export async function initSchedule() {
       dayElement.classList.add("selected");
     }
   });
-  
-  
-      } 
-    
+} 
+
+async function fetchBookings() {
+  try {
+    const response = await fetch(API_URL + 'findbookingsbydate');
+    if (!response.ok) {
+      throw new Error('Failed to fetch bookings');
+    }
+    const bookings = await response.json();
+
+    // Process the bookings and update the calendar
+    updateCalendarWithBookings(bookings);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+function updateCalendarWithBookings(bookings) {
+  const dayElements = document.querySelectorAll('.day[data-date]');
+
+  dayElements.forEach((dayElement) => {
+    const dayDate = new Date(dayElement.dataset.date);
+    const dayBookings = bookings.filter((booking) => {
+      const shiftStartDate = new Date(booking.shiftStart);
+      return shiftStartDate.toDateString() === dayDate.toDateString();
+    });
+
+    const bookedShifts = dayBookings.length;
+    const fullyBooked = bookedShifts >= 2; // Update the condition as needed, depending on the maximum number of shifts allowed
+
+    // Display the number of booked shifts and the names of the employees who made the bookings
+    const bookingInfoHTML = dayBookings
+      .map(
+        (booking) =>
+          `${booking.employeeResponse.firstName} ${booking.employeeResponse.lastName}: ${bookedShifts} shift(s)`
+      )
+      .join('<br/>');
+    dayElement.innerHTML += `<div class="booking-info">${bookingInfoHTML}</div>`;
+
+    // Mark the day as fully booked, if applicable
+    if (fullyBooked) {
+      dayElement.classList.add('fully-booked');
+    }
+  });
+}
+
 
 
 
@@ -81,7 +125,7 @@ function generateCalendar() {
   for (let i = 0; i < days.length; i++) {
     const day = days[i];
     day.addEventListener('click', function() {
-      if (!day.classList.contains('booked')) {
+      if (!day.classList.contains('booked') && !day.classList.contains('fully-booked')) {
         const bookingOptions = day.closest('.week').querySelector('.booking-options .book-form-container');
         const formHTML = `
           <form class="book-form">
@@ -139,6 +183,24 @@ function generateCalendar() {
     };
   
     try {
+      // Check if the day and shift has already been booked
+      const bookingsResponse = await fetch(API_URL + 'booking/findbookingsbydate/' + shiftStart.toISOString().substring(0, 10));
+      const bookings = await bookingsResponse.json();
+      const shiftBooked = bookings.some(booking => {
+        const bookingStart = new Date(booking.shiftStart);
+        const bookingEnd = new Date(booking.shiftEnd);
+        if (shift === 'morning') {
+          return bookingStart.getHours() <= 10 && bookingEnd.getHours() >= 14;
+        } else if (shift === 'afternoon') {
+          return bookingStart.getHours() <= 14 && bookingEnd.getHours() >= 19;
+        } else {
+          return bookingStart.getHours() <= 10 && bookingEnd.getHours() >= 19;
+        }
+      });
+      if (shiftBooked) {
+        throw new Error('This shift has already been booked');
+      }
+  
       const response = await fetch(API_URL + 'booking/create', {
         method: 'POST',
         headers: {
@@ -148,15 +210,14 @@ function generateCalendar() {
       });
   
       if (!response.ok) {
-        
         throw new Error('Failed to create booking');
       }
-  
-  
+      fetchBookings();
     } catch (error) {
       console.error(error);
     }
   }
+  
 
   
 

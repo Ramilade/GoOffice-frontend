@@ -98,5 +98,10 @@ body {
     background-color: #979393;
     color: white;
   }
+
+  .day.fully-booked {
+    background-color: red;
+  }
+  
   
   
