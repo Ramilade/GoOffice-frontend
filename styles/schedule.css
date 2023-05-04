@@ -63,6 +63,7 @@ body {
     margin: 10px;
     padding: 10px;
     cursor: pointer;
+    text-align: center;
   }
   
   .days {
@@ -76,6 +77,8 @@ body {
     border: 1px solid black;
     padding: 5px;
     text-align: center;
+    min-width: 100px;
+    min-height: 100px;
   }
   
   .day-name {
@@ -84,6 +87,16 @@ body {
   
   .day-number {
     font-size: 18px;
+  }
+
+  .day:hover {
+    background-color: #979393;
+    cursor: pointer;
+  }
+
+  .day.selected {
+    background-color: #979393;
+    color: white;
   }
   
   
