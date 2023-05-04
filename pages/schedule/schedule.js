@@ -50,21 +50,23 @@ function generateCalendar() {
       <div class="week">
         <h3>Week ${weekNumber}</h3>
         <div class="days">`;
-    for (let j = 0; j < DAYS_OF_WEEK.length; j++) {
-      const currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + j);
-      if (currentDate.getMonth() === startDate.getMonth()) {
-        const dayNumber = currentDate.getDate();
-        const options = { day: '2-digit', month: '2-digit', timeZone: 'Europe/Copenhagen' };
-        const dateString = currentDate.toLocaleDateString('en-DK', options);
-        calendarHTML += `
-          <div class="day" data-date="${currentDate.toISOString()}">
-            <div class="day-name">${DAYS_OF_WEEK[j]}</div>
-            <div class="day-number">${dateString}</div>
-          </div>`;
-      } else {
-        calendarHTML += `<div class="day"></div>`;
-      }
-    }
+        for (let j = 0; j < DAYS_OF_WEEK.length; j++) {
+          const currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + j);
+          if (currentDate.getMonth() === startDate.getMonth()) {
+            const dayNumber = currentDate.getDate();
+            const options = { day: '2-digit', month: '2-digit', timeZone: 'Europe/Copenhagen' };
+            const dateString = currentDate.toLocaleDateString('en-DK', options);
+            const isPast = currentDate.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0);
+
+            calendarHTML += `
+              <div class="day ${isPast ? 'past' : ''}" data-date="${currentDate.toISOString()}">
+                <div class="day-name">${DAYS_OF_WEEK[j]}</div>
+                <div class="day-number">${dateString}</div>
+              </div>`;
+          } else {
+            calendarHTML += `<div class="day"></div>`;
+          }
+        }
     calendarHTML += `</div>`;
     calendarHTML += `
       <div class="booking-options">
@@ -72,6 +74,8 @@ function generateCalendar() {
       </div>
     </div>`;
   }
+
+  
 
   // Set calendar HTML
   document.getElementById('calendar').innerHTML = calendarHTML;
@@ -111,6 +115,9 @@ function generateCalendar() {
       }
     });
   }
+
+
+  
     // Reset booked shifts
     document.querySelectorAll('.day').forEach(day => day.classList.remove('booked'));
   

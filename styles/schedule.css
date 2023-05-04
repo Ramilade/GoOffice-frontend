@@ -95,8 +95,16 @@ body {
   }
 
   .day.selected {
-    background-color: #979393;
+    background-color: #94c9e2;
     color: white;
   }
+
+
+  .day.past {
+    background-color: #5c5b5b;
+    pointer-events: none;
+  }
+  
+  
   
   
