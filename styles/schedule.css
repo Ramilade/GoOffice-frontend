@@ -95,13 +95,27 @@ body {
   }
 
   .day.selected {
-    background-color: #979393;
+    
+    border: 3px solid #000;
+  }
+
+  .day.past {
+    background-color: #5c5b5b;
+    pointer-events: none;
+  }
+
+  .day.today {
+    background-color: #25c481;
     color: white;
+    
   }
 
   .day.fully-booked {
     background-color: red;
   }
+  
+  
+  
   
   
   
