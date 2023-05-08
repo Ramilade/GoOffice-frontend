@@ -5,13 +5,13 @@ import {
 } from "./utils.js"
 
 import { initSchedule } from "./pages/schedule/schedule.js"
-
+import {initLogin, checkAuthenticationStatus } from "./pages/security/login.js"
 
 window.addEventListener("load", async () => {
 
   const templateSchedule = await loadHtml("./pages/schedule/schedule.html")
   const templateNotFound = await loadHtml("./pages/notFound/notFound.html")
-
+  const templateLogin = await loadHtml("./pages/security/login.html")
 
   adjustForMissingHash()
 
@@ -27,9 +27,19 @@ window.addEventListener("load", async () => {
       }
     })
     .on({
+      "/": async () => {
+        if (await checkAuthenticationStatus() === false) {
+          window.router.navigate("/login");
+          return;
+        }
+      },
       "/schedule": () => {
         renderTemplate(templateSchedule, "content")
         initSchedule()
+      },
+      "/login": () => {
+        renderTemplate(templateLogin, "content")
+        initLogin()
       },
     })
     .notFound(() => {
