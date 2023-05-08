@@ -1,68 +1,82 @@
 const backendUrl = "http://localhost:8080";
 
-export function initLogin(){
+export function initLogin() {
+  document.getElementById("google").addEventListener("click", function () {
+    openLoginPopup("google");
+  });
 
-    document.getElementById("google").addEventListener("click", function () {
-        openLoginPopup("google");
-    });
-
-    document.getElementById("logout").addEventListener("click", async function () {
-        try {
-            const response = await fetch(`${backendUrl}/logout`, { method: 'POST', credentials: 'include' });
-             console.log('Logout response:', response); // Log the response
-            if (response.status === 200 || response.status === 204) {
-                checkAuthenticationStatus();
-            }
-        } catch (error) {
-            console.error('Error during logout:', error);
-        }
-    });
-    
+document.getElementById("logout").addEventListener("click", logout);
 
 }
+
+export async function logout() {
+  try {
+    const response = await fetch(`${backendUrl}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    console.log("Logout response:", response); // Log the response
+    if (response.status === 200 || response.status === 204) {
+      checkAuthenticationStatus();
+    }
+  } catch (error) {
+    console.error("Error during logout:", error);
+  }
+}
+
 
 export async function checkAuthenticationStatus() {
-    try {
-      const response = await fetch(`${backendUrl}/auth-status`, { credentials: 'include' });
-  
-      if (response.status === 200) {
-        const jsonResponse = await response.json(); // Parse the JSON response
-        console.log('Authentication status response JSON:', jsonResponse); // Log the JSON response
-  
-        if (jsonResponse.isAuthenticated) {
-          return true;
-        } else {
-          return false;
-        }
+  const loginButton = document.getElementById("google");
+  const logoutButton = document.getElementById("logout");
+  try {
+    const response = await fetch(`${backendUrl}/auth-status`, {
+      credentials: "include",
+    });
+
+    if (response.status === 200) {
+      const jsonResponse = await response.json(); // Parse the JSON response
+      console.log("Authentication status response JSON:", jsonResponse); // Log the JSON response
+
+      if (jsonResponse.isAuthenticated) {
+        if (loginButton) loginButton.style.display = "none";
+        if (logoutButton) logoutButton.style.display = "block";
+        return true;
       } else {
-        console.error('Error checking authentication status. Unexpected response status:', response.status);
+        if (loginButton) loginButton.style.display = "block";
+        if (logoutButton) logoutButton.style.display = "none";
         return false;
       }
-    } catch (error) {
-      console.error('Error checking authentication status:', error);
+    } else {
+      console.error(
+        "Error checking authentication status. Unexpected response status:",
+        response.status
+      );
       return false;
     }
+  } catch (error) {
+    console.error("Error checking authentication status:", error);
+    return false;
   }
-  
-// Call the checkAuthenticationStatus function when the page loads
-
-
-// Add this event listener to the end of your script.js file
-
-
-function openLoginPopup(provider) {
-    const popup = window.open(
-        `${backendUrl}/oauth2/authorization/${provider}`,
-        "Login",
-        "width=600,height=600"
-    );
-
-    const timer = setInterval(() => {
-        if (popup.closed) {
-            clearInterval(timer);
-            checkAuthenticationStatus();
-        }
-    }, 1000);
 }
 
+function openLoginPopup(provider) {
+  const width = 600;
+  const height = 600;
+  const left = window.innerWidth / 2 - width / 2 + window.screenX;
+  const top = window.innerHeight / 2 - height / 2 + window.screenY;
 
+  const popup = window.open(
+    `${backendUrl}/oauth2/authorization/${provider}`,
+    "Login",
+    `width=${width},height=${height},left=${left},top=${top}`
+  );
+
+  const timer = setInterval(async () => {
+    if (popup.closed) {
+      clearInterval(timer);
+      if (await checkAuthenticationStatus()) {
+        window.router.navigate("/"); // Navigate to the desired page after login
+      }
+    }
+  }, 1000);
+}

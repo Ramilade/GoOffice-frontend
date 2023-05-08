@@ -21,7 +21,8 @@ window.addEventListener("load", async () => {
 
   router
     .hooks({
-      before(done, match) {
+      before: async (done, match) => {
+        await checkAuthenticationStatus();
         setActiveLink("menu", match.url)
         done()
       }
@@ -37,9 +38,10 @@ window.addEventListener("load", async () => {
         renderTemplate(templateSchedule, "content")
         initSchedule()
       },
-      "/login": () => {
+      "/login": async () => {
         renderTemplate(templateLogin, "content")
         initLogin()
+        await checkAuthenticationStatus();
       },
     })
     .notFound(() => {
