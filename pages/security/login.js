@@ -47,10 +47,7 @@ export async function checkAuthenticationStatus() {
         return false;
       }
     } else {
-      console.error(
-        "Error checking authentication status. Unexpected response status:",
-        response.status
-      );
+        response.json().then((json) => console.log(json))
       return false;
     }
   } catch (error) {
