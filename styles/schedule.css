@@ -1,121 +1,59 @@
-body {
-    font-family: Arial, sans-serif;
+.calendar {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    width: 100%;
   }
   
-  .schedule-container {
+  .week {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    border: 1px solid #7a7a7a;
+    padding: 10px;
+    margin: 10px;
+    width: 100%;
+    max-width: 600px;
   }
-  
-  .days {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
+
+  .week h3 {
+    margin-bottom: 10px;
   }
   
   .day {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    background-color: #f0f0f0;
-    padding: 16px;
-    border-radius: 4px;
-  }
-  
-  .day-name {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  button {
-    background-color: #008CBA;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    padding: 8px 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 4px;
-  }
-  
-  button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  .booking-info {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .booking-info span {
-    font-weight: bold;
-  }
-
-  .week {
-    border: 1px solid black;
-    margin: 10px;
+    border: 1px solid #ccc;
     padding: 10px;
+    margin: 5px;
+    flex: 1;
+  }
+  
+  
+  .modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-content {
+    position: relative;
+    top: 50px;
+    width: 600px;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 5px;
+    margin: 0 auto;
+  }
+  
+  
+  .close {
     cursor: pointer;
-    text-align: center;
+    float: right;
   }
-  
-  .days {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-top: 10px;
-  }
-  
-  .day {
-    border: 1px solid black;
-    padding: 5px;
-    text-align: center;
-    min-width: 100px;
-    min-height: 100px;
-  }
-  
-  .day-name {
-    font-weight: bold;
-  }
-  
-  .day-number {
-    font-size: 18px;
-  }
-
-  .day:hover {
-    background-color: #979393;
-    cursor: pointer;
-  }
-
-  .day.selected {
-    
-    border: 3px solid #000;
-  }
-
-  .day.past {
-    background-color: #5c5b5b;
-    pointer-events: none;
-  }
-
-  .day.today {
-    background-color: #25c481;
-    color: white;
-    
-  }
-
-  .day.fully-booked {
-    background-color: red;
-  }
-  
-  
-  
-  
-  
   

@@ -1,241 +1,331 @@
 import { API_URL } from "../../settings.js";
 import { hideLoading, sanitizeStringWithTableRows, showLoading } from "../../utils.js";
 
-const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const employeeId = 1;
+let currentDate;
+let selectedDate = null;
+
 
 export async function initSchedule() {
-    document.addEventListener('DOMContentLoaded', () => {
-        initSchedule();
-      });
-  generateCalendar();
-  fetchBookings();
-
-  document.getElementById("calendar").addEventListener("click", (e) => {
-    const clickedElement = e.target;
-    const dayElement = clickedElement.classList.contains("day")
-      ? clickedElement
-      : clickedElement.closest(".day");
-    if (dayElement) {
-      const selectedElement = document.querySelector(".day.selected");
-      if (selectedElement) {
-        selectedElement.classList.remove("selected");
-      }
-      dayElement.classList.add("selected");
-    }
-  });
-} 
-
-async function fetchBookings() {
-  try {
-    const response = await fetch(API_URL + 'findbookingsbydate');
-    if (!response.ok) {
-      throw new Error('Failed to fetch bookings');
-    }
-    const bookings = await response.json();
-
-    // Process the bookings and update the calendar
-    updateCalendarWithBookings(bookings);
-  } catch (error) {
-    console.error(error);
+    createCurrentDate();
+    createWeekContainers();
+    attachEventListeners();
+    createCalendar();
   }
-}
+
+  function createCurrentDate() {
+    currentDate = new Date();
+    currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Set to Monday of the current week
+  }
 
 
-function updateCalendarWithBookings(bookings) {
-  const dayElements = document.querySelectorAll('.day[data-date]');
-
-  dayElements.forEach((dayElement) => {
-    const dayDate = new Date(dayElement.dataset.date);
-    const dayBookings = bookings.filter((booking) => {
-      const shiftStartDate = new Date(booking.shiftStart);
-      return shiftStartDate.toDateString() === dayDate.toDateString();
+  function attachEventListeners() {
+    document.getElementById("bookMorning").addEventListener("click", function () {
+      bookShift("morning", employeeId, selectedDate);
     });
+    
+    document.getElementById("bookAfternoon").addEventListener("click", function () {
+      bookShift("afternoon", employeeId, selectedDate);
+    });
+    
+    document.getElementById("bookFullDay").addEventListener("click", function () {
+      bookShift("fullDay", employeeId, selectedDate);
+    });
+    
+  
+    document.getElementById("cancelShift").addEventListener("click", function () {
+      cancelShift(employeeId, selectedDate);
+    });
+  }
 
-    const bookedShifts = dayBookings.length;
-    const fullyBooked = bookedShifts >= 2; // Update the condition as needed, depending on the maximum number of shifts allowed
 
-    // Display the number of booked shifts and the names of the employees who made the bookings
-    const bookingInfoHTML = dayBookings
-      .map(
-        (booking) =>
-          `${booking.employeeResponse.firstName} ${booking.employeeResponse.lastName}: ${bookedShifts} shift(s)`
-      )
-      .join('<br/>');
-    dayElement.innerHTML += `<div class="booking-info">${bookingInfoHTML}</div>`;
-
-    // Mark the day as fully booked, if applicable
-    if (fullyBooked) {
-      dayElement.classList.add('fully-booked');
+  function createWeekContainers() {
+    const template = document.querySelector(".template");
+    for (let i = 1; i <= 4; i++) {
+      const weekContainer = document.createElement("div");
+      weekContainer.id = `week${i}`;
+      weekContainer.classList.add("week");
+      template.appendChild(weekContainer);
     }
-  });
-}
+  }
 
-
-
-
-function generateCalendar() {
-  // Get current date
-  const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.getMonth();
-  const currentDate = today.getDate();
-
-  // Determine the start of the week
-  const dayOfWeek = today.getDay();
-  const startOfWeek = new Date(currentYear, currentMonth, currentDate - dayOfWeek + 1);
-
-  // Create calendar HTML
-  let calendarHTML = '';
-  for (let i = 0; i < 4; i++) {
-    const startDate = new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate() + (i * 7));
-    const endDate = new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate() + (i * 7) + 6);
-    const weekNumber = startDate.getWeek();
-    calendarHTML += `
-      <div class="week">
-        <h3>Week ${weekNumber}</h3>
-        <div class="days">`;
-        for (let j = 0; j < DAYS_OF_WEEK.length; j++) {
-          const currentDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + j);
-          if (currentDate.getMonth() === startDate.getMonth()) {
-            const dayNumber = currentDate.getDate();
-            const options = { day: '2-digit', month: '2-digit', timeZone: 'Europe/Copenhagen' };
-            const dateString = currentDate.toLocaleDateString('en-DK', options);
-            const isPast = currentDate.setHours(0, 0, 0, 0) < today.setHours(0, 0, 0, 0);
-            const isToday = currentDate.setHours(0, 0, 0, 0) === today.setHours(0, 0, 0, 0);
-            calendarHTML += `
-              <div class="day ${isPast ? 'past' : ''} ${isToday ? 'today' : ''}" data-date="${currentDate.toISOString()}">
-                <div class="day-name">${DAYS_OF_WEEK[j]}</div>
-                <div class="day-number">${dateString}</div>
-              </div>`;
-          } else {
-            calendarHTML += `<div class="day"></div>`;
+  function createCalendar() {
+    for (let i = 0; i < 4; i++) {
+      const weekContainer = document.getElementById(`week${i + 1}`);
+      const weekStart = new Date(currentDate);
+      currentDate.setDate(currentDate.getDate() + 7);
+      const weekEnd = new Date(currentDate);
+      weekEnd.setDate(weekEnd.getDate() - 3);
+      const weekNumber = getWeekNumber(weekStart);
+      const weekLabel = document.createElement("h3");
+      weekLabel.innerHTML = `Week ${weekNumber}: ${weekStart.toDateString()} - ${weekEnd.toDateString()}`;
+      weekContainer.appendChild(weekLabel);
+  
+      const days = document.createElement("div");
+      days.classList.add("days");
+      weekContainer.appendChild(days);
+  
+      for (let j = 1; j <= 5; j++) {
+        const day = document.createElement("div");
+        day.classList.add("day");
+  
+        // Create a new date object to pass to the showModal function
+        const clickedDate = new Date(weekStart);
+  
+        day.addEventListener("click", async () => {
+          const dayElement = document.querySelector(`.day[data-date="${clickedDate.toISOString().substring(0, 10)}"]`);
+          if (dayElement !== null) {
+            await fetchAndDisplayBookings(clickedDate, dayElement, employeeId);
           }
-        }
-    calendarHTML += `</div>`;
-    calendarHTML += `
-      <div class="booking-options">
-        <div class="book-form-container"></div>
-      </div>
-    </div>`;
+          showModal(clickedDate);
+        });
+  
+        days.appendChild(day);
+        fetchAndDisplayBookings(clickedDate, day, employeeId); // Correctly pass day element here
+        weekStart.setDate(weekStart.getDate() + 1);
+      }
+    }
   }
-
+  
+  
+      
+  async function showModal(date, shiftInfo) {
+    const modal = document.getElementById("modal");
+    const modalDate = document.getElementById("modalDate");
+    const closeBtn = document.getElementsByClassName("close")[0];
+  
+    const bookMorningBtn = document.getElementById("bookMorning");
+    const bookAfternoonBtn = document.getElementById("bookAfternoon");
+    const bookFullDayBtn = document.getElementById("bookFullDay");
+  
+    bookMorningBtn.removeAttribute("disabled");
+    bookAfternoonBtn.removeAttribute("disabled");
+    bookFullDayBtn.removeAttribute("disabled");
+  
+    selectedDate = date;
+  
+    const dayElement = document.querySelector(`.day[data-date="${date.toISOString().substring(0, 10)}"]`);
+    if (shiftInfo) {
+      updateButtonStates(shiftInfo.morningShifts, shiftInfo.afternoonShifts, shiftInfo.currentUserMorningBooked, shiftInfo.currentUserAfternoonBooked);
+    }
+  
+    modal.style.display = "block";
+    modalDate.innerText = date.toDateString();
+  
+    closeBtn.onclick = function () {
+      modal.style.display = "none";
+      location.reload();
+    };
+  
+    window.onclick = function (event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+        location.reload();
+      }
+    };
+  }
   
 
-  // Set calendar HTML
-  document.getElementById('calendar').innerHTML = calendarHTML;
-
-  // Add click event listeners to days
-  const days = document.querySelectorAll('.day');
-  for (let i = 0; i < days.length; i++) {
-    const day = days[i];
-    day.addEventListener('click', function() {
-      if (!day.classList.contains('booked') && !day.classList.contains('fully-booked')) {
-        const bookingOptions = day.closest('.week').querySelector('.booking-options .book-form-container');
-        const formHTML = `
-          <form class="book-form">
-            <label>
-              <input type="radio" name="shift" value="morning"> Morning
-            </label>
-            <label>
-              <input type="radio" name="shift" value="afternoon"> Afternoon
-            </label>
-            <label>
-              <input type="radio" name="shift" value="full-day"> Full day
-            </label>
-            <button type="submit">Book</button>
-          </form>
-        `;
-        bookingOptions.innerHTML = formHTML;
-
-        const form = bookingOptions.querySelector('.book-form');
-        form.addEventListener('submit', function(event) {
-          event.preventDefault();
-          const shift = form.elements['shift'].value;
-          ///////////////////////////////////////////////////////////////////////////////////////////
-          const employeeId = 1; // hardcoded for now, should be retrieved from the logged in user
-          ///////////////////////////////////////////////////////////////////////////////////////////
-          bookShift(day, shift, employeeId);
-        });
+  async function fetchAndDisplayBookings(date, dayElement, employeeId) {
+    const response = await fetch(API_URL + "booking/findbookingsbydate/" + date.toISOString().split('T')[0]);
+    const bookings = await response.json();
+    let morningShifts = 0;
+    let afternoonShifts = 0;
+    let currentUserMorningBooked = false;
+    let currentUserAfternoonBooked = false;
+  
+    bookings.forEach(booking => {
+      const shiftStart = new Date(booking.shiftStart);
+      const shiftEnd = new Date(booking.shiftEnd);
+  
+      if (booking.employeeResponse.employeeId === employeeId) {
+        if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
+          currentUserMorningBooked = true;
+        } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
+          currentUserAfternoonBooked = true;
+        } else if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 17) {
+          currentUserMorningBooked = true;
+          currentUserAfternoonBooked = true;
+        }
+      }
+  
+      if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
+        morningShifts++;
+      } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
+        afternoonShifts++;
+      } else if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 17) {
+        morningShifts++;
+        afternoonShifts++;
       }
     });
-  }
-
-
   
-    // Reset booked shifts
-    document.querySelectorAll('.day').forEach(day => day.classList.remove('booked'));
+    dayElement.innerHTML = `<span>${date.getDate()}/${(date.getMonth()+1)}</span><br><span>AM: ${morningShifts} / PM: ${afternoonShifts}</span>`;
+    
+    dayElement.addEventListener("click", () => {
+      showModal(date, {
+        morningShifts: morningShifts,
+        afternoonShifts: afternoonShifts,
+        currentUserMorningBooked: currentUserMorningBooked,
+        currentUserAfternoonBooked: currentUserAfternoonBooked
+      });
+    });
+  }
   
 
-  }
-
-  async function bookShift(day, shift, employeeId) {
-    const shiftStart = new Date(day.dataset.date);
-    // Set the start and end hours of the shift by local time plus 2 hours hence the odd numbers due to UTC times
-    shiftStart.setHours(10);
-    const shiftEnd = new Date(shiftStart);
-    if (shift === 'morning') {
-      shiftEnd.setHours(14);
-    } else if (shift === 'afternoon') {
-      shiftStart.setHours(14);
+  function updateButtonStates(morningShifts, afternoonShifts, currentUserMorningBooked, currentUserAfternoonBooked) {
+    const bookMorningBtn = document.getElementById("bookMorning");
+    const bookAfternoonBtn = document.getElementById("bookAfternoon");
+    const bookFullDayBtn = document.getElementById("bookFullDay");
+    const cancelShiftBtn = document.getElementById("cancelShift");
+  
+    if (morningShifts >= 7 || currentUserMorningBooked) {
+      bookMorningBtn.setAttribute("disabled", "disabled");
     } else {
-      shiftEnd.setHours(19);
+      bookMorningBtn.removeAttribute("disabled");
+    }
+  
+    if (afternoonShifts >= 7 || currentUserAfternoonBooked) {
+      bookAfternoonBtn.setAttribute("disabled", "disabled");
+    } else {
+      bookAfternoonBtn.removeAttribute("disabled");
+    }
+  
+    if (morningShifts >= 7 || afternoonShifts >= 7 || currentUserMorningBooked || currentUserAfternoonBooked) {
+      bookFullDayBtn.setAttribute("disabled", "disabled");
+    } else {
+      bookFullDayBtn.removeAttribute("disabled");
+    }
+  
+    if (!currentUserMorningBooked && !currentUserAfternoonBooked) {
+      cancelShiftBtn.setAttribute("disabled", "disabled");
+    } else {
+      cancelShiftBtn.removeAttribute("disabled");
+    }
+  }
+  
+  
+
+  function getWeekNumber(date) {
+    const tempDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    tempDate.setDate(tempDate.getDate() + (1 - tempDate.getDay()) + 3);
+    const firstThursday = tempDate.valueOf();
+    tempDate.setMonth(0, 1);
+    if (tempDate.getDay() !== 4) {
+      tempDate.setMonth(0, 1 + ((4 - tempDate.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - tempDate) / 604800000);
+  }
+
+
+  //Function to convert the JavaScript Date object to the correct local time string
+function toLocalISOString(date) {
+    const tzOffset = -date.getTimezoneOffset() * 60000;
+    const localDate = new Date(date.getTime() + tzOffset);
+    return localDate.toISOString().split('.')[0];
+  }
+
+
+  async function bookShift(shiftType, employeeId, date) {
+    const shiftStart = new Date(date);
+    const shiftEnd = new Date(date);
+    shiftStart.setMinutes(0);
+    shiftStart.setSeconds(0);
+    shiftEnd.setMinutes(0);
+    shiftEnd.setSeconds(0);
+  
+    if (shiftType === 'morning') {
+      shiftStart.setHours(8);
+      shiftEnd.setHours(12);
+    } else if (shiftType === 'afternoon') {
+      shiftStart.setHours(12);
+      shiftEnd.setHours(17);
+    } else {
+      shiftStart.setHours(8);
+      shiftEnd.setHours(17);
     }
   
     const booking = {
-      shiftStart: shiftStart.toISOString(),
-      shiftEnd: shiftEnd.toISOString(),
+      shiftStart: toLocalISOString(shiftStart),
+      shiftEnd: toLocalISOString(shiftEnd),
       created: new Date().toISOString(),
       updated: new Date().toISOString(),
-      employeeId: employeeId.toString(),
+      employeeId: employeeId.toString()
     };
   
     try {
-      // Check if the day and shift has already been booked
-      const bookingsResponse = await fetch(API_URL + 'booking/findbookingsbydate/' + shiftStart.toISOString().substring(0, 10));
-      const bookings = await bookingsResponse.json();
-      const shiftBooked = bookings.some(booking => {
-        const bookingStart = new Date(booking.shiftStart);
-        const bookingEnd = new Date(booking.shiftEnd);
-        if (shift === 'morning') {
-          return bookingStart.getHours() <= 10 && bookingEnd.getHours() >= 14;
-        } else if (shift === 'afternoon') {
-          return bookingStart.getHours() <= 14 && bookingEnd.getHours() >= 19;
-        } else {
-          return bookingStart.getHours() <= 10 && bookingEnd.getHours() >= 19;
-        }
-      });
-      if (shiftBooked) {
-        throw new Error('This shift has already been booked');
-      }
-  
-      const response = await fetch(API_URL + 'booking/create', {
-        method: 'POST',
+      const response = await fetch(API_URL + "booking/create", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify(booking),
+        body: JSON.stringify(booking)
       });
   
       if (!response.ok) {
-        throw new Error('Failed to create booking');
+        const errorText = await response.text();
+        console.error("Failed to create booking:", errorText, booking);
+        alert("Failed to create booking");
+        throw new Error("Failed to create booking");
       }
-      fetchBookings();
+  
+      const dayElement = document.querySelector(`.day[data-date="${selectedDate.toISOString().substring(0, 10)}"]`);
+      if (dayElement !== null) {
+        await fetchAndDisplayBookings(selectedDate, dayElement, employeeId);
+      }
+  
+      const updatedShiftInfo = await getShiftInfo(selectedDate, employeeId);
+      showModal(selectedDate, updatedShiftInfo); // Refresh the modal after booking
+  
     } catch (error) {
       console.error(error);
     }
   }
   
+  async function getShiftInfo(date, employeeId) {
+    const response = await fetch(API_URL + "booking/findbookingsbydate/" + date.toISOString().split('T')[0]);
+    const bookings = await response.json();
+    let morningShifts = 0;
+    let afternoonShifts = 0;
+    let currentUserMorningBooked = false;
+    let currentUserAfternoonBooked = false;
+  
+    bookings.forEach(booking => {
+      const shiftStart = new Date(booking.shiftStart);
+      const shiftEnd = new Date(booking.shiftEnd);
+  
+      if (booking.employeeResponse.employeeId === employeeId) {
+        if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
+          currentUserMorningBooked = true;
+        } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
+          currentUserAfternoonBooked = true;
+        } else if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 17) {
+          currentUserMorningBooked = true;
+          currentUserAfternoonBooked = true;
+        }
+      }
+  
+      if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
+        morningShifts++;
+      } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
+        afternoonShifts++;
+      } else if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 17) {
+        morningShifts++;
+        afternoonShifts++;
+      }
+    });
+  
+    return {
+      morningShifts: morningShifts,
+      afternoonShifts: afternoonShifts,
+      currentUserMorningBooked: currentUserMorningBooked,
+      currentUserAfternoonBooked: currentUserAfternoonBooked
+    };
+  }
+
+
+  async function cancelShift(employeeId, date) {
+    
+  }
 
   
-
-// Extend the Date object to add a getWeek() method
-Date.prototype.getWeek = function() {
-  const date = new Date(this.getTime());
-  date.setHours(0, 0, 0, 0);
-  date.setDate(date.getDate() + 4 - (date.getDay() || 7));
-  const yearStart = new Date(date.getFullYear(), 0, 1);
-  const weekNumber = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
-  return weekNumber;
-};
-
-
+  
