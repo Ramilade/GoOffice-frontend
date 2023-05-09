@@ -1,64 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Go Office</title>
     <!-- Bootstrap CSS -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+    />
     <!-- Custom CSS -->
-    <link href="/styles/sidebar.css" rel="stylesheet">
-    <link href="/styles/schedule.css" rel="stylesheet">
+    <link href="/styles/sidebar.css" rel="stylesheet" />
+    <link href="/styles/schedule.css" rel="stylesheet" />
     <!-- jQuery and Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+
     <!-- Custom JS -->
     <script src="sidebar.js" type="module"></script>
     <script src="index.js" type="module"></script>
-</head>
-<body>
-        <!-- Hamburger icon -->
-        <i class="hamburger fas fa-bars"></i>
+  </head>
+  <body>
+    <!-- Hamburger icon -->
+    <i class="hamburger fas fa-bars"></i>
 
-        <div id="menu" class="sidebar sidebar-collapsed">
-            <img src="/images/g_icon_white.png" alt="Logo Collapsed" class="logo logo-collapsed">
-            <img src="/images/go office_white.png" alt="Logo" class="logo-large logo-expanded" style="display:none;">
-    
-            <!-- Tab links with icons -->
-            <a class="nav-link" href="/" data-navigo>
-                <i class="icon fas fa-home"></i> <span>Home</span>
-            </a>
-            <a class="nav-link" href="#tab2" data-navigo>
-                <i class="icon fas fa-user"></i> <span>Profile</span>
-            </a>
-            <a class="nav-link" href="/schedule" data-navigo>
-                <i class="icon fas fa-calendar"></i> <span>Schedule</span>
-            </a>
-            <a class="nav-link" href="/login" data-navigo>
-                <i class="icon fas fa-cog"></i> <span>Settings</span>
-            </a>
-    
-            <!-- Sign In/Sign Out Button at the bottom of the sidebar -->
-            <div class="sidebar-bottom">
-                <a href="/login" class="sign-btn">
-                    <i class="icon fas fa-sign-in-alt"></i> <span>Sign In</span>
-                </a>
-                <a href="#sign-out" class="sign-btn" style="display:none;">
-                    <i class="icon fas fa-sign-out-alt"></i> <span>Sign Out</span>
-                </a>
-            </div>
-        </div>
+    <div id="menu" class="sidebar sidebar-collapsed">
+      <img
+        src="/images/g_icon_white.png"
+        alt="Logo Collapsed"
+        class="logo logo-collapsed"
+      />
+      <img
+        src="/images/go office_white.png"
+        alt="Logo"
+        class="logo-large logo-expanded"
+        style="display: none"
+      />
 
-        <!-- Main Content -->
-    <div id="content" class="content"><div id="user-info" style="display:none;">
+      <!-- Tab links with icons -->
+      <a class="nav-link" href="/">
+        <i class="icon fas fa-home"></i> <span>Home</span>
+      </a>
+      <a class="nav-link" href="#tab2" data-navigo>
+        <i class="icon fas fa-user"></i> <span>Profile</span>
+      </a>
+      <a class="nav-link" href="/schedule" data-navigo>
+        <i class="icon fas fa-calendar"></i> <span>Schedule</span>
+      </a>
+      <a class="nav-link" href="/login" data-navigo>
+        <i class="icon fas fa-cog"></i> <span>Settings</span>
+      </a>
+      <a href="/login" class="sign-btn">
+        <i class="icon fas fa-sign-in-alt"></i> <span>Sign In</span>
+      </a>
+    </div>
+
+    <!-- Main Content -->
+    <div id="content" class="content">
+      <div id="user-info" style="display: none">
         <img id="user-profile-pic" src="" alt="Profile Picture" />
         <span id="user-name"></span>
         <span id="user-email"></span>
-      </div></div>
-
-</body>
+      </div>
+    </div>
+  </body>
 </html>

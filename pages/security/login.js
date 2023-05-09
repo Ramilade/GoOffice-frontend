@@ -38,6 +38,11 @@ export async function checkAuthenticationStatus() {
       console.log("Authentication status response JSON:", jsonResponse); // Log the JSON response
 
       if (jsonResponse.isAuthenticated) {
+        if (popup) {
+          popup.close(); // Close the popup window if it exists
+          window.router.navigate("/");
+          window.location.reload();
+        }
         if (loginButton) loginButton.style.display = "none";
         if (logoutButton) logoutButton.style.display = "block";
         return true;
@@ -56,24 +61,32 @@ export async function checkAuthenticationStatus() {
   }
 }
 
+function isMobileDevice() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+let popup;
+
 function openLoginPopup(provider) {
-  const width = 600;
-  const height = 600;
-  const left = window.innerWidth / 2 - width / 2 + window.screenX;
-  const top = window.innerHeight / 2 - height / 2 + window.screenY;
+  if (isMobileDevice()) {
+    // Redirect to the login page on mobile devices
+    window.location.href = `${backendUrl}/oauth2/authorization/${provider}`;
+  } else {
+    const width = 600;
+    const height = 600;
+    const left = window.innerWidth / 2 - width / 2 + window.screenX;
+    const top = window.innerHeight / 2 - height / 2 + window.screenY;
 
-  const popup = window.open(
-    `${backendUrl}/oauth2/authorization/${provider}`,
-    "Login",
-    `width=${width},height=${height},left=${left},top=${top}`
-  );
+    popup = window.open(
+      `${backendUrl}/oauth2/authorization/${provider}`,
+      "Login",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
 
-  const timer = setInterval(async () => {
-    if (popup.closed) {
-      clearInterval(timer);
+    const timer = setInterval(async () => {
       if (await checkAuthenticationStatus()) {
+        clearInterval(timer);
         window.router.navigate("/"); // Navigate to the desired page after login
       }
-    }
-  }, 1000);
+    }, 1000);
+  }
 }
