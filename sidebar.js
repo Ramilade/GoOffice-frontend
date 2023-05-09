@@ -1,29 +1,26 @@
-$(document).ready(function() {
+const backendUrl = "http://localhost:8080";
+import { checkAuthenticationStatus } from "./pages/security/login.js";
+import { logout } from "./pages/security/login.js";
+
+
+$(document).ready(function () {
     // Set the initial position of the hamburger icon
-    $('.hamburger').css('left', '90px');
-
-    // Toggle Sign In and Sign Out buttons
-    $('.sign-btn').on('click', function(event) {
+    $(".hamburger").css("left", "90px");
+  
+    // Login button click event
+    $('a[href="/login"]').on("click", function (event) {
+      event.preventDefault();
+      window.router.navigate("/login");
+    });
+  
+    // Logout button click event
+    $('a[href="#sign-out"]').on("click", async function (event) {
         event.preventDefault();
-        $('.sign-btn').toggle();
-    });
-
+        await logout();
+      });
+  
     // Toggle sidebar collapse
-    $('.hamburger').on('click', function() {
-        if ($(window).width() > 768) {
-            $('.sidebar').toggleClass('sidebar-collapsed');
-            $('.logo-expanded, .logo-collapsed').toggle(); // Toggle logo visibility
-            if ($('.sidebar').hasClass('sidebar-collapsed')) {
-             $('.hamburger').css('left', '90px'); // Position the hamburger next to the collapsed sidebar
-         } else {
-             $('.hamburger').css('left', '220px'); // Position the hamburger next to the expanded sidebar
-         }
-            $('.content').toggleClass('sidebar-collapsed');
-        } else {
-            // Toggle menu visibility for mobile view
-            $('.sidebar').toggleClass('mobile-active');
-            $('.sidebar a:not(.sign-btn)').toggle();
-        }
+    $(".hamburger").on("click", function () {
+      // ... existing code ...
     });
-});
-
+  });
