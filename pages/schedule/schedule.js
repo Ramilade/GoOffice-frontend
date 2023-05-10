@@ -265,7 +265,7 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
 // Inside fetchAndDisplayBookings function
 dayElement.innerHTML = `<div class="day-content"><span>${getDayName(date)} ${date.getDate()}/${
   date.getMonth() + 1
-}</span><span class="flag" style="display:${flagDisplay}; ">🚩</span><br><span>Morning: ${morningShifts} <br>Afternoon: ${afternoonShifts}</span></div>`;
+}</span><span class="flag" style="display:${flagDisplay}; ">Flag</span><br><span>Morning: ${morningShifts} <br>Afternoon: ${afternoonShifts}</span></div>`;
 
   const cancelShiftMorningBtn = document.getElementById("cancelShift1");
   const cancelShiftAfternoonBtn = document.getElementById("cancelShift2");
