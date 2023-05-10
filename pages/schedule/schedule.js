@@ -27,15 +27,7 @@ export async function initSchedule() {
     document.getElementById("bookAfternoon").addEventListener("click", function () {
       bookShift("afternoon", employeeId, selectedDate);
     });
-    
-    document.getElementById("bookFullDay").addEventListener("click", function () {
-      bookShift("fullDay", employeeId, selectedDate);
-    });
-    
-  
-    document.getElementById("cancelShift").addEventListener("click", function () {
-      cancelShift(employeeId, selectedDate);
-    });
+
   }
 
 
@@ -175,32 +167,21 @@ export async function initSchedule() {
   function updateButtonStates(morningShifts, afternoonShifts, currentUserMorningBooked, currentUserAfternoonBooked) {
     const bookMorningBtn = document.getElementById("bookMorning");
     const bookAfternoonBtn = document.getElementById("bookAfternoon");
-    const bookFullDayBtn = document.getElementById("bookFullDay");
-    const cancelShiftBtn = document.getElementById("cancelShift");
+    const cancelShiftMorningBtn = document.getElementById("cancelShift1");
+    const cancelShiftAfternoonBtn = document.getElementById("cancelShift2");
   
-    if (morningShifts >= 7 || currentUserMorningBooked) {
+    if (morningShifts >= 7) {
       bookMorningBtn.setAttribute("disabled", "disabled");
     } else {
       bookMorningBtn.removeAttribute("disabled");
     }
   
-    if (afternoonShifts >= 7 || currentUserAfternoonBooked) {
+    if (afternoonShifts >= 7) {
       bookAfternoonBtn.setAttribute("disabled", "disabled");
     } else {
       bookAfternoonBtn.removeAttribute("disabled");
     }
   
-    if (morningShifts >= 7 || afternoonShifts >= 7 || currentUserMorningBooked || currentUserAfternoonBooked) {
-      bookFullDayBtn.setAttribute("disabled", "disabled");
-    } else {
-      bookFullDayBtn.removeAttribute("disabled");
-    }
-  
-    if (!currentUserMorningBooked && !currentUserAfternoonBooked) {
-      cancelShiftBtn.setAttribute("disabled", "disabled");
-    } else {
-      cancelShiftBtn.removeAttribute("disabled");
-    }
   }
   
   
