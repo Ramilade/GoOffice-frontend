@@ -5,32 +5,40 @@ import {
   showLoading,
 } from "../../utils.js";
 
-const employeeId = 1;
+let employeeId = null;
 let currentDate;
 let selectedDate = null;
 let morningShiftId;
 let afternoonShiftId;
 
 export async function initSchedule() {
-  createCurrentDate();
-  createWeekContainers();
-  attachEventListeners();
-  createCalendar();
-}
+    createCurrentDate();
+    createWeekContainers();
+    attachEventListeners();
+    createCalendar();
+    employeeId = await fetchEmployeeId();
+  }
 
 function createCurrentDate() {
   currentDate = new Date();
   currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Set to Monday of the current week
 }
 
-function attachEventListeners() {
-  document.getElementById("bookMorning").addEventListener("click", function () {
-    bookShift("morning", employeeId, selectedDate);
-  });
+  async function fetchEmployeeId() {
+    const response = await fetch(API_URL + "employee/findbyid", {
+      credentials: "include",
+    });
+    const id = await response.json();
+    return id;
+  }
 
-  document
-    .getElementById("bookAfternoon")
-    .addEventListener("click", function () {
+
+  function attachEventListeners() {
+    document.getElementById("bookMorning").addEventListener("click", function () {
+      bookShift("morning", employeeId, selectedDate);
+    });
+    
+    document.getElementById("bookAfternoon").addEventListener("click", function () {
       bookShift("afternoon", employeeId, selectedDate);
     });
 
