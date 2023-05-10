@@ -127,7 +127,9 @@ export async function initSchedule() {
   
 
   async function fetchAndDisplayBookings(date, dayElement, employeeId) {
-    const response = await fetch(API_URL + "booking/findbookingsbydate/" + date.toISOString().split('T')[0]);
+    const response = await fetch(API_URL + "booking/findbookingsbydate/" + date.toISOString().split('T')[0], {
+      credentials: "include",
+    });
     const bookings = await response.json();
     let morningShifts = 0;
     let afternoonShifts = 0;
@@ -258,13 +260,15 @@ function toLocalISOString(date) {
         headers: {
           "Content-Type": "application/json"
         },
+        credentials: "include",
         body: JSON.stringify(booking)
       });
+      
   
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Failed to create booking:", errorText, booking);
-        alert("Failed to create booking");
+        console.log("Failed to create booking");
         throw new Error("Failed to create booking");
       }
   
@@ -282,7 +286,9 @@ function toLocalISOString(date) {
   }
   
   async function getShiftInfo(date, employeeId) {
-    const response = await fetch(API_URL + "booking/findbookingsbydate/" + date.toISOString().split('T')[0]);
+    const response = await fetch(API_URL + "booking/findbookingsbydate/" + date.toISOString().split('T')[0], {
+      credentials: "include",
+    });
     const bookings = await response.json();
     let morningShifts = 0;
     let afternoonShifts = 0;

@@ -41,9 +41,16 @@ window.addEventListener("load", async () => {
         }
         await fetchUserInfo(); // Fetch user information and update the UI
       },
-      "/schedule": () => {
+      "/schedule": async () => {
+        const isAuthenticated = await checkAuthenticationStatus();
+        if (!isAuthenticated) {
+          window.router.navigate("/login");
+          updateUserInfo(null);
+          return;
+        }
         renderTemplate(templateSchedule, "content");
         initSchedule();
+        
       },
       "/login": async () => {
         renderTemplate(templateLogin, "content");
