@@ -87,6 +87,6 @@ function openLoginPopup(provider) {
         clearInterval(timer);
         window.router.navigate("/"); // Navigate to the desired page after login
       }
-    }, 1000);
+    }, 0);
   }
 }
