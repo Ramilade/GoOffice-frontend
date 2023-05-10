@@ -1,7 +1,7 @@
 import { API_URL } from "../../settings.js";
 import { hideLoading, sanitizeStringWithTableRows, showLoading } from "../../utils.js";
 
-const employeeId = 1;
+let employeeId = null;
 let currentDate;
 let selectedDate = null;
 
@@ -11,11 +11,20 @@ export async function initSchedule() {
     createWeekContainers();
     attachEventListeners();
     createCalendar();
+    employeeId = await fetchEmployeeId();
   }
 
   function createCurrentDate() {
     currentDate = new Date();
     currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Set to Monday of the current week
+  }
+
+  async function fetchEmployeeId() {
+    const response = await fetch(API_URL + "employee/findbyid", {
+      credentials: "include",
+    });
+    const id = await response.json();
+    return id;
   }
 
 
