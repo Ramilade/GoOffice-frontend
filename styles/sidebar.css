@@ -98,10 +98,8 @@ body {
     margin-left: 220px; /* Same width as the expanded sidebar */
     padding: 20px;
     margin-top: 50px;
+    display:flex;
     transition: margin-left 0.1s ease-in-out;
-    justify-content: left;
-    align-items: center;
-    display: flex;
 }
 
 .sidebar-collapsed ~ .content {
