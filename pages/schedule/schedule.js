@@ -10,7 +10,8 @@ let currentDate;
 let selectedDate = null;
 let morningShiftId;
 let afternoonShiftId;
-
+let morningShifts;
+let afternoonShifts;
 
 export async function initSchedule() {
     createCurrentDate();
@@ -224,8 +225,28 @@ function displayEmployeeNames(bookings) {
   });
 }
 
+async function setAvailableDesks(date){
+  try {
+    const response2 = await fetch(
+      API_URL + "booking/findavailable/" + date.toISOString().split("T")[0],
+      {
+        credentials: "include",
+      }
+    );
+  
+    const available = await response2.json();
+    morningShifts = available[0];
+    afternoonShifts = available[1];
+    console.log(morningShifts);
+    console.log(afternoonShifts);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 async function fetchAndDisplayBookings(date, dayElement, employeeId) {
+  await setAvailableDesks(date);
+  try{
   const response = await fetch(
     API_URL + "booking/findbookingsbydate/" + date.toISOString().split("T")[0],
     {
@@ -233,11 +254,16 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
     }
   );
   const bookings = await response.json();
-  let morningShifts = 0;
-  let afternoonShifts = 0;
+
+
+  // let morningShifts = 0;
+  // let afternoonShifts = 0;
   let currentUserMorningBooked = false;
   let currentUserAfternoonBooked = false;
   let flagDisplay = 'none';
+
+
+
 
   bookings.forEach((booking) => {
     const shiftStart = new Date(booking.shiftStart);
@@ -253,9 +279,9 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
     
     if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
       
-      morningShifts++;
+      morningShifts--;
     } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
-      afternoonShifts++;
+      afternoonShifts--;
     }
 
       flagDisplay = 'inline';
@@ -266,6 +292,7 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
 dayElement.innerHTML = `<div class="day-content"><span>${getDayName(date)} ${date.getDate()}/${
   date.getMonth() + 1
 }</span><span class="flag" style="display:${flagDisplay}; ">🚩</span><br><span>Morning: ${morningShifts} <br>Afternoon: ${afternoonShifts}</span></div>`;
+
 
   const cancelShiftMorningBtn = document.getElementById("cancelShift1");
   const cancelShiftAfternoonBtn = document.getElementById("cancelShift2");
@@ -305,7 +332,11 @@ dayElement.innerHTML = `<div class="day-content"><span>${getDayName(date)} ${dat
     }),
       getShiftInfo(date, employeeId);
   });
+} catch (error) {
+  console.error(error);
 }
+}
+
 
 function getDayName(date) {
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -323,13 +354,13 @@ function updateButtonStates(
   const cancelShiftMorningBtn = document.getElementById("cancelShift1");
   const cancelShiftAfternoonBtn = document.getElementById("cancelShift2");
 
-  if (morningShifts >= 7) {
+  if (morningShifts <= 0) {
     bookMorningBtn.setAttribute("disabled", "disabled");
   } else {
     bookMorningBtn.removeAttribute("disabled");
   }
 
-  if (afternoonShifts >= 7) {
+  if (afternoonShifts <= 0) {
     bookAfternoonBtn.setAttribute("disabled", "disabled");
   } else {
     bookAfternoonBtn.removeAttribute("disabled");
