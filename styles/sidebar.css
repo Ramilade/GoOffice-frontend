@@ -29,7 +29,6 @@
     font-size: 30px;
     margin-right: 0;
 }
-'
 
 .sidebar-collapsed a {
     justify-content: center;
@@ -95,9 +94,8 @@ body {
 }
 
 .content {
-    margin-left: 220px; /* Same width as the expanded sidebar */
+    margin-left: 220px; 
     padding: 20px;
-    margin-top: 50px;
     display:flex;
     transition: margin-left 0.1s ease-in-out;
 }
@@ -152,9 +150,10 @@ body {
     }
 
     .content {
-        margin-left: 0 !important;
-        margin-top: 0px !important;
+        margin-left: -10px !important;
+        margin-top: -10px !important;
         text-align: left !important;
+        padding: 20px !important;
       }
     .hamburger {
         top: 15px;
