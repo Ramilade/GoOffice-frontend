@@ -151,7 +151,7 @@ async function showModal(date, shiftInfo) {
   displayEmployeeNames(bookings);
 
 
-  //@ts-ignore
+  
   closeBtn.onclick = function () {
     modal.style.display = "none";
     location.reload();
@@ -369,7 +369,7 @@ function getWeekNumber(date) {
   if (tempDate.getDay() !== 4) {
     tempDate.setMonth(0, 1 + ((4 - tempDate.getDay() + 7) % 7));
   }
-  //@ts-ignore
+  
   return 1 + Math.ceil((firstThursday - tempDate) / 604800000);
 }
 
