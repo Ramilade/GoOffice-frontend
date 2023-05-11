@@ -441,10 +441,9 @@ async function bookShift(shiftType, employeeId, date) {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Failed to create booking:", errorText, booking);
-      console.log("Failed to create booking");
-      throw new Error("Failed to create booking");
+      const errorJson = await response.json();
+      console.error("Failed to create booking:", errorJson.message, booking);
+      throw new Error(errorJson.message);
     }
 
     const dayElement = document.querySelector(
