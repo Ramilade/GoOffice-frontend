@@ -40,6 +40,7 @@ export async function checkAuthenticationStatus() {
       if (jsonResponse.isAuthenticated) {
         if (popup) {
           popup.close(); // Close the popup window if it exists
+          //@ts-ignore
           window.router.navigate("/");
           window.location.reload();
         }
@@ -86,6 +87,7 @@ function openLoginPopup(provider) {
       if (await checkAuthenticationStatus()) {
         clearInterval(timer);
         popup.close(); // Close the popup window if it exists
+        //@ts-ignore
         window.router.navigate("/"); // Navigate to the desired page after login
       }
     }, 1000);
