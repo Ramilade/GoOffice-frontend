@@ -59,15 +59,22 @@ function attachEventListeners() {
 
 function isDateBeforeToday(date) {
   const today = new Date();
-  
+  const todayWithoutTime = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+  const parsedDateWithoutTime = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+  const currentHours = today.getHours();
+
   return (
-    date.getTime() < today.getTime() ||
-    date.getFullYear() < today.getFullYear() ||
-    (date.getFullYear() === today.getFullYear() &&
-      date.getMonth() < today.getMonth()) ||
-    (date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() < today.getDate())
+    todayWithoutTime.getTime() > parsedDateWithoutTime.getTime() ||
+    (todayWithoutTime.getTime() === parsedDateWithoutTime.getTime() &&
+      currentHours >= 17)
   );
 }
 
@@ -250,8 +257,8 @@ async function setAvailableDesks(date) {
     const available = await response2.json();
     morningShifts = available[0];
     afternoonShifts = available[1];
-    console.log(morningShifts);
-    console.log(afternoonShifts);
+    //console.log(morningShifts);
+    //console.log(afternoonShifts);
   } catch (error) {
     console.error(error);
   }
@@ -262,81 +269,79 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
 
   const bookings = await fetchBookings(date);
 
-    // let morningShifts = 0;
-    // let afternoonShifts = 0;
-    let currentUserMorningBooked = false;
-    let currentUserAfternoonBooked = false;
-    let flagDisplay = "none";
+  // let morningShifts = 0;
+  // let afternoonShifts = 0;
+  let currentUserMorningBooked = false;
+  let currentUserAfternoonBooked = false;
+  let flagDisplay = "none";
 
-    bookings.forEach((booking) => {
-      const shiftStart = new Date(booking.shiftStart);
-      const shiftEnd = new Date(booking.shiftEnd);
+  bookings.forEach((booking) => {
+    const shiftStart = new Date(booking.shiftStart);
+    const shiftEnd = new Date(booking.shiftEnd);
 
-      if (booking.employeeResponse.employeeId === employeeId) {
-        if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
-          currentUserMorningBooked = true;
-        } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
-          currentUserAfternoonBooked = true;
-        }
-      }
-
+    if (booking.employeeResponse.employeeId === employeeId) {
       if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
-        morningShifts--;
+        currentUserMorningBooked = true;
       } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
-        afternoonShifts--;
+        currentUserAfternoonBooked = true;
       }
-
-      flagDisplay = "inline";
-    });
-
-    // Inside fetchAndDisplayBookings function
-    dayElement.innerHTML = `<div class="day-content"><span>${getDayName(
-      date
-    )} ${date.getDate()}/${
-      date.getMonth() + 1
-    }</span><span class="flag" style="display:${flagDisplay}; ">🚩</span><br><span>Morning: ${morningShifts} <br>Afternoon: ${afternoonShifts}</span></div>`;
-
-    const cancelShiftMorningBtn = document.getElementById("cancelShift1");
-    const cancelShiftAfternoonBtn = document.getElementById("cancelShift2");
-
-    if (currentUserMorningBooked) {
-      document.getElementById("bookMorning").style.display = "none";
-      cancelShiftMorningBtn.style.display = "block";
-    } else {
-      document.getElementById("bookMorning").style.display = "block";
-      cancelShiftMorningBtn.style.display = "none";
     }
 
-    if (currentUserAfternoonBooked) {
-      document.getElementById("bookAfternoon").style.display = "none";
-      cancelShiftAfternoonBtn.style.display = "block";
-    } else {
-      document.getElementById("bookAfternoon").style.display = "block";
-      cancelShiftAfternoonBtn.style.display = "none";
+    if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
+      morningShifts--;
+    } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
+      afternoonShifts--;
     }
 
-    if (currentUserMorningBooked || currentUserAfternoonBooked) {
-      document
-        .getElementById("bookMorning")
-        .setAttribute("disabled", "disabled");
-      document
-        .getElementById("bookAfternoon")
-        .setAttribute("disabled", "disabled");
-    } else {
-      document.getElementById("bookMorning").removeAttribute("disabled");
-      document.getElementById("bookAfternoon").removeAttribute("disabled");
-    }
+    flagDisplay = "inline";
+  });
 
-    dayElement.addEventListener("click", () => {
-      showModal(date, {
-        morningShifts: morningShifts,
-        afternoonShifts: afternoonShifts,
-        currentUserMorningBooked: currentUserMorningBooked,
-        currentUserAfternoonBooked: currentUserAfternoonBooked,
-      }),
-        getShiftInfo(date, employeeId);
-    });
+  // Inside fetchAndDisplayBookings function
+  dayElement.innerHTML = `<div class="day-content"><span>${getDayName(
+    date
+  )} ${date.getDate()}/${
+    date.getMonth() + 1
+  }</span><span class="flag" style="display:${flagDisplay}; ">🚩</span><br><span>Morning: ${morningShifts} <br>Afternoon: ${afternoonShifts}</span></div>`;
+
+  const cancelShiftMorningBtn = document.getElementById("cancelShift1");
+  const cancelShiftAfternoonBtn = document.getElementById("cancelShift2");
+
+  if (currentUserMorningBooked) {
+    document.getElementById("bookMorning").style.display = "none";
+    cancelShiftMorningBtn.style.display = "block";
+  } else {
+    document.getElementById("bookMorning").style.display = "block";
+    cancelShiftMorningBtn.style.display = "none";
   }
+
+  if (currentUserAfternoonBooked) {
+    document.getElementById("bookAfternoon").style.display = "none";
+    cancelShiftAfternoonBtn.style.display = "block";
+  } else {
+    document.getElementById("bookAfternoon").style.display = "block";
+    cancelShiftAfternoonBtn.style.display = "none";
+  }
+
+  if (currentUserMorningBooked || currentUserAfternoonBooked) {
+    document.getElementById("bookMorning").setAttribute("disabled", "disabled");
+    document
+      .getElementById("bookAfternoon")
+      .setAttribute("disabled", "disabled");
+  } else {
+    document.getElementById("bookMorning").removeAttribute("disabled");
+    document.getElementById("bookAfternoon").removeAttribute("disabled");
+  }
+
+  dayElement.addEventListener("click", () => {
+    showModal(date, {
+      morningShifts: morningShifts,
+      afternoonShifts: afternoonShifts,
+      currentUserMorningBooked: currentUserMorningBooked,
+      currentUserAfternoonBooked: currentUserAfternoonBooked,
+    }),
+      getShiftInfo(date, employeeId);
+  });
+}
 
 function getDayName(date) {
   const days = [
@@ -468,7 +473,6 @@ async function bookShift(shiftType, employeeId, date) {
 }
 
 async function getShiftInfo(date, employeeId) {
-
   const bookings = await fetchBookings(date);
 
   let morningShifts = 0;
