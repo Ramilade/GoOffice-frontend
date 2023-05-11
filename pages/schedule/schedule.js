@@ -12,33 +12,34 @@ let morningShiftId;
 let afternoonShiftId;
 
 export async function initSchedule() {
-    createCurrentDate();
-    createWeekContainers();
-    attachEventListeners();
-    createCalendar();
-    employeeId = await fetchEmployeeId();
-  }
+  createCurrentDate();
+  createWeekContainers();
+  attachEventListeners();
+  createCalendar();
+  employeeId = await fetchEmployeeId();
+}
 
 function createCurrentDate() {
   currentDate = new Date();
   currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 1); // Set to Monday of the current week
 }
 
-  async function fetchEmployeeId() {
-    const response = await fetch(API_URL + "employee/findbyid", {
-      credentials: "include",
-    });
-    const id = await response.json();
-    return id;
-  }
+async function fetchEmployeeId() {
+  const response = await fetch(API_URL + "employee/findbyid", {
+    credentials: "include",
+  });
+  const id = await response.json();
+  return id;
+}
 
+function attachEventListeners() {
+  document.getElementById("bookMorning").addEventListener("click", function () {
+    bookShift("morning", employeeId, selectedDate);
+  });
 
-  function attachEventListeners() {
-    document.getElementById("bookMorning").addEventListener("click", function () {
-      bookShift("morning", employeeId, selectedDate);
-    });
-    
-    document.getElementById("bookAfternoon").addEventListener("click", function () {
+  document
+    .getElementById("bookAfternoon")
+    .addEventListener("click", function () {
       bookShift("afternoon", employeeId, selectedDate);
     });
 
@@ -289,10 +290,9 @@ async function bookShift(shiftType, employeeId, date) {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Failed to create booking:", errorText, booking);
-      console.log("Failed to create booking");
-      throw new Error("Failed to create booking");
+      const errorJson = await response.json();
+      console.error("Failed to create booking:", errorJson.message, booking);
+      throw new Error(errorJson.message);
     }
 
     const dayElement = document.querySelector(
