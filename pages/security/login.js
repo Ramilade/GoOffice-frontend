@@ -85,8 +85,9 @@ function openLoginPopup(provider) {
     const timer = setInterval(async () => {
       if (await checkAuthenticationStatus()) {
         clearInterval(timer);
+        popup.close(); // Close the popup window if it exists
         window.router.navigate("/"); // Navigate to the desired page after login
       }
-    }, 0);
+    }, 1000);
   }
 }
