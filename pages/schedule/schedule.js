@@ -59,15 +59,22 @@ function attachEventListeners() {
 
 function isDateBeforeToday(date) {
   const today = new Date();
+  const todayWithoutTime = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
+  const parsedDateWithoutTime = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
+  const currentHours = today.getHours();
 
   return (
-    date.getTime() < today.getTime() ||
-    date.getFullYear() < today.getFullYear() ||
-    (date.getFullYear() === today.getFullYear() &&
-      date.getMonth() < today.getMonth()) ||
-    (date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() < today.getDate())
+    todayWithoutTime.getTime() > parsedDateWithoutTime.getTime() ||
+    (todayWithoutTime.getTime() === parsedDateWithoutTime.getTime() &&
+      currentHours >= 17)
   );
 }
 
@@ -275,11 +282,11 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
         }
       }
 
-      if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
-        morningShifts--;
-      } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
-        afternoonShifts--;
-      }
+    if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
+      morningShifts--;
+    } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
+      afternoonShifts--;
+    }
 
       flagDisplay = "inline";
     }
