@@ -5,20 +5,19 @@ import {
   showLoading,
 } from "../../utils.js";
 
-let employeeId = null;
+let employeeId;
 let currentDate;
 let selectedDate = null;
 let morningShiftId;
 let afternoonShiftId;
-// let morningShifts = 7;
-// let afternoonShifts = 7;
+
 
 export async function initSchedule() {
+  employeeId = await fetchEmployeeId();
   createCurrentDate();
   createWeekContainers();
   attachEventListeners();
   createCalendar();
-  employeeId = await fetchEmployeeId();
 }
 async function fetchEmployeeId() {
   const response = await fetch(API_URL + "employee/findbyid", {
@@ -112,19 +111,12 @@ function createCalendar() {
       const clickedDate = new Date(weekStart);
 
       if (!isDateBeforeToday(clickedDate)) {
-        day.addEventListener("click", async () => {
           const dayElement = document.querySelector(
             `.day[data-date="${clickedDate.toISOString().substring(0, 10)}"]`
           );
-          if (dayElement !== null) {
-            await fetchAndDisplayBookings(clickedDate, dayElement, employeeId);
-          }
-          showModal(clickedDate);
-        });
       } else {
         day.classList.add("disabled-date"); // This class will be used to style disabled dates
       }
-
       days.appendChild(day);
       fetchAndDisplayBookings(clickedDate, day, employeeId); // Correctly pass day element here
       weekStart.setDate(weekStart.getDate() + 1);
@@ -132,16 +124,15 @@ function createCalendar() {
   }
 }
 
-async function showModal(date, shiftInfo) {
+async function showModal(date) {
   const modal = document.getElementById("modal");
   const modalDate = document.getElementById("modalDate");
   const closeBtn = document.getElementsByClassName("close")[0];
 
-  getShiftInfo(date, employeeId);
-
   selectedDate = date;
 
   const bookings = await fetchBookings(date);
+  getShiftInfo(bookings, employeeId)
 
   updateButtonStates(bookings);
 
@@ -240,19 +231,34 @@ function updateButtonStates(bookings) {
 }
 
 function displayEmployeeNames(bookings) {
-  const employeeNamesContainer = document.getElementById("employeeNames");
-  employeeNamesContainer.innerHTML = ""; // Clear the container before adding new employee names
+  const employeeNamesContainerMorning = document.getElementById("employeeNamesMorning");
+  const employeeNamesContainerAfternoon = document.getElementById("employeeNamesAfternoon");
+  employeeNamesContainerMorning.innerHTML = ""; // Clear the container before adding new employee names
+  employeeNamesContainerAfternoon.innerHTML = "";
+  
 
-  const uniqueEmployees = new Set(); // Use a Set to store unique employee names
+  const uniqueEmployeesMorning = new Set(); // Use a Set to store unique employee names
+  const uniqueEmployeesAfternoon = new Set();
   bookings.forEach((booking) => {
     const employeeName = booking.employeeResponse.name;
-    uniqueEmployees.add(employeeName);
+    const shiftStart = new Date(booking.shiftStart);
+    if(shiftStart.getHours() === 8){
+      uniqueEmployeesMorning.add("◾️ " + employeeName);
+    } else {
+      uniqueEmployeesAfternoon.add("◾️ " + employeeName);
+    }
   });
 
-  uniqueEmployees.forEach((name) => {
+  uniqueEmployeesMorning.forEach((name) => {
     const nameElement = document.createElement("p");
     nameElement.innerText = name;
-    employeeNamesContainer.appendChild(nameElement);
+    employeeNamesContainerMorning.appendChild(nameElement);
+  });
+
+  uniqueEmployeesAfternoon.forEach((name) => {
+    const nameElement = document.createElement("p");
+    nameElement.innerText = name;
+    employeeNamesContainerAfternoon.appendChild(nameElement);
   });
 }
 
@@ -264,7 +270,8 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
   let afternoonShifts = 7;
   let currentUserMorningBooked = false;
   let currentUserAfternoonBooked = false;
-  let flagDisplay = "none";
+  let flagDisplay1 = "none";
+  let flagDisplay2 = "none";
 
   bookings.forEach((booking) => {
     const shiftStart = new Date(booking.shiftStart);
@@ -274,12 +281,13 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
       date.toISOString().split("T")[0] ===
       shiftStart.toISOString().split("T")[0]
     ) {
-
       if (booking.employeeResponse.employeeId === employeeId) {
         if (shiftStart.getHours() === 8 && shiftEnd.getHours() === 12) {
           currentUserMorningBooked = true;
+          flagDisplay1 = "inline";
         } else if (shiftStart.getHours() === 12 && shiftEnd.getHours() === 17) {
           currentUserAfternoonBooked = true;
+          flagDisplay2 = "inline";
         }
       }
 
@@ -289,16 +297,19 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
       afternoonShifts--;
     }
 
-      flagDisplay = "inline";
+      
     }
   });
 
+
   // Inside fetchAndDisplayBookings function
-  dayElement.innerHTML = `<div class="day-content"><span>${getDayName(
+  dayElement.innerHTML = `<div class="day-content"><span">${getDayName(
     date
   )} ${date.getDate()}/${
     date.getMonth() + 1
-  }</span><span class="flag" style="display:${flagDisplay}; ">🚩</span><br><span>Morning: ${morningShifts} <br>Afternoon: ${afternoonShifts}</span></div>`;
+  }</span><br><div style="text-align:center">
+  <span>🌞: ${morningShifts}</span><span class="flag" style="display:${flagDisplay1}; ">  ✔️</span>
+  <span> <br>🌚: ${afternoonShifts}</span><span class="flag" style="display:${flagDisplay2}; ">  ✔️</span></div></div>`;
 
   const cancelShiftMorningBtn = document.getElementById("cancelShift1");
   const cancelShiftAfternoonBtn = document.getElementById("cancelShift2");
@@ -334,13 +345,7 @@ async function fetchAndDisplayBookings(date, dayElement, employeeId) {
   }
 
   dayElement.addEventListener("click", () => {
-    showModal(date, {
-      morningShifts: morningShifts,
-      afternoonShifts: afternoonShifts,
-      currentUserMorningBooked: currentUserMorningBooked,
-      currentUserAfternoonBooked: currentUserAfternoonBooked,
-    }),
-      getShiftInfo(date, employeeId);
+    showModal(date)
   });
 }
 
@@ -426,16 +431,13 @@ async function bookShift(shiftType, employeeId, date) {
     if (dayElement !== null) {
       await fetchAndDisplayBookings(selectedDate, dayElement, employeeId);
     }
-
-    const updatedShiftInfo = await getShiftInfo(selectedDate, employeeId);
-    showModal(selectedDate, updatedShiftInfo); // Refresh the modal after booking
+    showModal(selectedDate); // Refresh the modal after booking
   } catch (error) {
     console.error(error);
   }
 }
 
-async function getShiftInfo(date, employeeId) {
-  const bookings = await fetchBookings(date);
+async function getShiftInfo(bookings, employeeId) {
 
   let morningShifts = 7;
   let afternoonShifts = 7;
@@ -477,8 +479,6 @@ async function cancelShift(shiftId) {
       throw new Error("Shift ID is undefined.");
     }
 
-    console.log("Trying to delete shift with id: " + shiftId);
-
     const response = await fetch(API_URL + "booking/delete/" + shiftId, {
       method: "DELETE",
       headers: {
@@ -491,8 +491,7 @@ async function cancelShift(shiftId) {
       throw new Error("Failed to delete shift.");
     }
 
-    const updatedShiftInfo = await getShiftInfo(selectedDate, employeeId);
-    showModal(selectedDate, updatedShiftInfo);
+    showModal(selectedDate);
   } catch (error) {
     console.error(error);
   }

@@ -1,5 +1,5 @@
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Roboto', sans-serif;
 }
 
 .weeks-container {
@@ -102,4 +102,35 @@ body {
 .close {
   cursor: pointer;
   float: right;
+}
+
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  text-align: center;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+@media (max-width: 768px) {
+  .modal-content {
+    position: relative;
+    top: 50px;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 5px;
+    margin: 0 auto;
+  }
+
+  .row h3{
+    font-size: 25px;
+  }
 }
