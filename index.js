@@ -15,8 +15,9 @@ import {
 
 window.addEventListener("load", async () => {
   const templateSchedule = await loadHtml("./pages/schedule/schedule.html");
-  const templateNotFound = await loadHtml("./pages/notFound/notFound.html");
+  //const templateNotFound = await loadHtml("./pages/notFound/notFound.html");
   const templateLogin = await loadHtml("./pages/security/login.html");
+  const templateVacation = await loadHtml("./pages/vacation/vacation.html");
 
   adjustForMissingHash();
 
@@ -52,6 +53,15 @@ window.addEventListener("load", async () => {
         initSchedule();
         
       },
+      "/vacation": async () => {
+        const isAuthenticated = await checkAuthenticationStatus();
+        if (!isAuthenticated) {
+          window.router.navigate("/login");
+          updateUserInfo(null);
+          return;
+        }
+        renderTemplate(templateVacation, "content");
+      },
       "/login": async () => {
         renderTemplate(templateLogin, "content");
         initLogin();
@@ -59,7 +69,7 @@ window.addEventListener("load", async () => {
       },
     })
     .notFound(() => {
-      renderTemplate(templateNotFound, "content");
+      window.location.href = "/notFound.html";
     })
     .resolve();
 });

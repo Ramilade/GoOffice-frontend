@@ -15,6 +15,7 @@
     color: #818181;
     display: block;
     padding: 10px;
+    margin-left: 10px;
 }
 
 .sidebar a:hover {
@@ -37,17 +38,6 @@
 .sidebar-collapsed a span {
     display: none;
 }
-
-.hamburger {
-    display: inline-block;
-    position: fixed;
-    top: 10px;
-    left: 220px; /* Position the hamburger next to the sidebar */
-    z-index: 1000;
-    font-size: 30px;
-    cursor: pointer;
-}
-
 
 .logo {
     display: block;
@@ -97,7 +87,6 @@ body {
     margin-left: 220px; 
     padding: 20px;
     display:flex;
-    transition: margin-left 0.1s ease-in-out;
 }
 
 .sidebar-collapsed ~ .content {
