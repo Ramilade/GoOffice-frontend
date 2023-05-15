@@ -1,4 +1,4 @@
-const backendUrl = "http://goofficeapp.azurewebsites.net";
+const backendUrl = "https://goofficeapp.azurewebsites.net";
 
 export function initLogin() {
   document.getElementById("google").addEventListener("click", function () {
