@@ -1,5 +1,5 @@
 import "./navigo_EditedByLars.js"; //Will create the global Navigo, with a few changes, object used below
-
+import { API_URL } from "settings.js";
 import {
   setActiveLink,
   adjustForMissingHash,
@@ -108,9 +108,8 @@ function updateUserInfo(userInfo) {
 }
 
 async function fetchUserInfo() {
-  const backendUrl = "http://localhost:8080";
   try {
-    const response = await fetch(`${backendUrl}/user-info`, { credentials: "include" });
+    const response = await fetch(`${API_URL}/user-info`, { credentials: "include" });
     if (response.status === 200) {
       const userInfo = await response.json();
       localStorage.setItem("user", JSON.stringify(userInfo));

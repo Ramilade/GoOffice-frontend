@@ -1,5 +1,7 @@
-const backendUrl = "https://goffice.azurewebsites.net";
+// const backendUrl = "https://goffice.azurewebsites.net";
 // const backendUrl = "http://localhost:8080/api/";
+
+import { API_URL } from "../../settings.js";
 
 export function initLogin() {
   document.getElementById("google").addEventListener("click", function () {
@@ -15,7 +17,7 @@ document.getElementById("logout").addEventListener("click", logout);
 
 export async function logout() {
   try {
-    const response = await fetch(`${backendUrl}/logout`, {
+    const response = await fetch(`${API_URL}/logout`, {
       method: "POST",
       credentials: "include",
     });
@@ -33,7 +35,7 @@ export async function checkAuthenticationStatus() {
   const loginButton = document.getElementById("google");
   const logoutButton = document.getElementById("logout");
   try {
-    const response = await fetch(`${backendUrl}/auth-status`, {
+    const response = await fetch(`${API_URL}/auth-status`, {
       credentials: "include",
     });
 
@@ -74,7 +76,7 @@ let popup;
 function openLoginPopup(provider) {
   if (isMobileDevice()) {
     // Redirect to the login page on mobile devices
-    window.location.href = `${backendUrl}/oauth2/authorization/${provider}`;
+    window.location.href = `${API_URL}/oauth2/authorization/${provider}`;
   } else {
     const width = 600;
     const height = 600;
@@ -82,7 +84,7 @@ function openLoginPopup(provider) {
     const top = window.innerHeight / 2 - height / 2 + window.screenY;
 
     popup = window.open(
-      `${backendUrl}/oauth2/authorization/${provider}`,
+      `${API_URL}/oauth2/authorization/${provider}`,
       "Login",
       `width=${width},height=${height},left=${left},top=${top}`
     );

@@ -11,7 +11,6 @@ let selectedDate = null;
 let morningShiftId;
 let afternoonShiftId;
 
-
 export async function initSchedule() {
   employeeId = await fetchEmployeeId();
   createCurrentDate();
@@ -20,7 +19,7 @@ export async function initSchedule() {
   createCalendar();
 }
 async function fetchEmployeeId() {
-  const response = await fetch(API_URL + "employee/findbyid", {
+  const response = await fetch(API_URL + "/api/employee/findbyid", {
     credentials: "include",
   });
   const id = await response.json();
@@ -160,7 +159,7 @@ async function fetchBookings(date) {
   try {
     const response = await fetch(
       API_URL +
-        "booking/findbookingsbydate/" +
+        "/api/booking/findbookingsbydate/" +
         date.toISOString().split("T")[0],
       {
         credentials: "include",
@@ -410,7 +409,7 @@ async function bookShift(shiftType, employeeId, date) {
   };
 
   try {
-    const response = await fetch(API_URL + "booking/create", {
+    const response = await fetch(API_URL + "/api/booking/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -479,7 +478,7 @@ async function cancelShift(shiftId) {
       throw new Error("Shift ID is undefined.");
     }
 
-    const response = await fetch(API_URL + "booking/delete/" + shiftId, {
+    const response = await fetch(API_URL + "/api/booking/delete/" + shiftId, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
