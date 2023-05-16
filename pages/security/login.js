@@ -8,9 +8,6 @@ export function initLogin() {
     openLoginPopup("google");
   });
 
-  document.getElementById("github").addEventListener("click", function () {
-    openLoginPopup("github");
-  });
 document.getElementById("logout").addEventListener("click", logout);
 
 }
