@@ -1,6 +1,7 @@
 const backendUrl = "https://go-office.azurewebsites.net";
 //const backendUrl = "http://localhost:8080";
 
+
 export function initLogin() {
   document.getElementById("google").addEventListener("click", function () {
     openLoginPopup("google");
