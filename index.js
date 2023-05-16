@@ -1,5 +1,5 @@
 import "./navigo_EditedByLars.js"; //Will create the global Navigo, with a few changes, object used below
-import { API_URL } from "settings.js";
+import { API_URL } from "./settings.js";
 import {
   setActiveLink,
   adjustForMissingHash,
