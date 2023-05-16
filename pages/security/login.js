@@ -1,10 +1,14 @@
-const backendUrl = "https://goofficeapp.azurewebsites.net";
+const backendUrl = "https://goffice.azurewebsites.net";
+// const backendUrl = "http://localhost:8080/api/";
 
 export function initLogin() {
   document.getElementById("google").addEventListener("click", function () {
     openLoginPopup("google");
   });
 
+  document.getElementById("github").addEventListener("click", function () {
+    openLoginPopup("github");
+  });
 document.getElementById("logout").addEventListener("click", logout);
 
 }
